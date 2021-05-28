@@ -2,12 +2,33 @@
 <html>
 <head>
     <meta charset="utf-8"/>
-    <script>var exports = {};</script>
+    <link rel="stylesheet" type="text/css" href="628190c5dca4d52d1d03.css">
     
 <script defer src="bundle.js"></script></head>
 <body>
-    <canvas id="canvas" width="2000" height="1000"></canvas>
-    <p id="clear">clear</p>
+    <div class="container-fluid !direction !spacing">
+        <h1>Orbit Simulator</h1>
+
+        <canvas id="canvas" width="2000" height="1000" style="border: 1px solid black;"></canvas>
+
+        <div>
+            <a class="btn btn-danger btn-sm " href="#" role="button" id="clear">clear</a>
+            <a class="btn btn-secondary btn-sm " href="#" role="button" id="movingPlanet">moving planet</a>
+            <a class="btn btn-secondary btn-sm " href="#" role="button" id="solidPlanet">solid planet</a>
+            <a class="btn btn-info btn-sm " href="#" role="button" id="solidInvertedPlanet">solid inverted planet</a>
+            <a class="btn btn-secondary btn-sm " href="#" role="button" id="ship">astroid</a>
+            <a class="btn btn-secondary btn-sm " href="#" role="button" id="move">deselect</a>
+            <div class="container-fluid !direction !spacing">
+                b5-row
+            </div>
+            <p id="size">current moving planet size = 100000</p>
+            <input id="slide" type="range" min="0" max="100" step="1" class="range">
+        </div>
+
+
+
+    </div>
+
 
 </body>
 </html>

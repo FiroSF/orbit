@@ -1,0 +1,14 @@
+export enum SELECTED_TYPES {
+    SOLID_PLANET = 1,
+    MOVING_PLANET = 2,
+    SHIP = 3,
+    SOLID_INVERTED_PLANET = 4,
+    MOVE = 0,
+}
+
+export enum CONSTANTS {
+    PLANET_DEFAULT_SIZE = 100000,
+    FOOTPRINT_LIFE_TIME = 3000,
+    SHIFT_RATE = 1000,
+    CTRL_RATE = 1000,
+}

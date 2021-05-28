@@ -1,3 +1,10 @@
+export class Footprint extends Path2D {
+    createdDate: number;
+    constructor() {
+        super();
+        this.createdDate = Date.now();
+    }
+}
 export class Obj {
     static count: number = 0;
     ID: number;
@@ -18,6 +25,7 @@ export class Obj {
 export class MovingObj extends Obj {
     vx: number;
     vy: number;
+    footprints: Footprint[] = [];
 
     constructor(x: number, y: number, g: number = 0, vx: number, vy: number) {
         super(x, y, g);
@@ -41,6 +49,8 @@ export class MovingObj extends Obj {
                 dx = p.x - this.x;
                 dy = p.y - this.y;
                 rsquare = dx ** 2 + dy ** 2;
+
+                if (rsquare == 0) rsquare = 0.00001;
                 // ax += (p.g / rsquare) * (dx * Math.abs(dx));
                 // ay += (p.g / rsquare) * (dy * Math.abs(dy));
                 a = p.g / rsquare;
@@ -56,8 +66,13 @@ export class MovingObj extends Obj {
                 }
 
                 // console.log(ax, ay);
-                axsum += ax;
-                aysum += ay;
+                if (p.g < 0) {
+                    axsum -= ax;
+                    aysum -= ay;
+                } else {
+                    axsum += ax;
+                    aysum += ay;
+                }
             }
         });
 
@@ -66,6 +81,9 @@ export class MovingObj extends Obj {
         this.vy += aysum * dt;
         this.x += this.vx * dt;
         this.y += this.vy * dt;
-        this.isModified = true;
+
+        if (this.vx != 0 || this.vy != 0) {
+            this.isModified = true;
+        }
     }
 }
