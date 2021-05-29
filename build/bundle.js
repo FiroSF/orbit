@@ -480,7 +480,7 @@ class Board {
 function draw() {
     let canvas = document.getElementById('canvas');
     let ctx = canvas.getContext('2d');
-    const board = new Board(0.01, 10, 1000);
+    const board = new Board(1, 10, 10);
     board.addObj(new objs_1.MovingPlanet(900, 500, 300000));
     // board.addObj(new SolidPlanet(1700, 700, 200000));
     // board.addObj(new MovingPlanet(1700, 400, 200000, 35, 30));
