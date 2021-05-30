@@ -12,17 +12,20 @@
         <canvas id="canvas" width="2000" height="1000" style="border: 1px solid black;"></canvas>
 
         <div>
-            <a class="btn btn-danger btn-sm " href="#" role="button" id="clear">clear</a>
-            <a class="btn btn-secondary btn-sm " href="#" role="button" id="movingPlanet">moving planet</a>
-            <a class="btn btn-secondary btn-sm " href="#" role="button" id="solidPlanet">solid planet</a>
-            <a class="btn btn-info btn-sm " href="#" role="button" id="solidInvertedPlanet">solid inverted planet</a>
-            <a class="btn btn-secondary btn-sm " href="#" role="button" id="ship">astroid</a>
-            <a class="btn btn-secondary btn-sm " href="#" role="button" id="move">deselect</a>
-            <div class="container-fluid !direction !spacing">
-                b5-row
-            </div>
+            <a class="btn btn-danger btn-sm " role="button" id="clear">clear</a>
+            <a class="btn btn-secondary btn-sm " role="button" id="movingPlanet">moving planet</a>
+            <a class="btn btn-secondary btn-sm " role="button" id="solidPlanet">solid planet</a>
+            <a class="btn btn-info btn-sm " role="button" id="solidInvertedPlanet">solid inverted planet</a>
+            <a class="btn btn-secondary btn-sm "  role="button" id="ship">astroid</a>
+            <a class="btn btn-secondary btn-sm " role="button" id="move">deselect</a>
             <p id="size">current moving planet size = 100000</p>
-            <input id="slide" type="range" min="0" max="100" step="1" class="range">
+            <input id="ctrlRate" type="range" min="1" max="100" step="1" class="range" value="10">
+            <p id="ctrlRateViewer">10</p>
+            <input id="trailRate" type="range" min="1" max="1000" step="1" class="range" value="300">
+            <p id="trailRateViewer">300</p>
+            <input id="dtRate" type="range" min="0" max="100" step="0.01" class="range" value="1">
+            <p id="dtRateViewer">1</p>
+            <p id="timeRatio">Current simulation time ratio = x1</p>
         </div>
 
 

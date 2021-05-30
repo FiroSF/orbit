@@ -1,10 +1,10 @@
-export class Footprint extends Path2D {
-    createdDate: number;
-    constructor() {
-        super();
-        this.createdDate = Date.now();
-    }
-}
+// export class Trail extends Path2D {
+//     createdDate: number;
+//     constructor() {
+//         super();
+//         this.createdDate = Date.now();
+//     }
+// }
 export class Obj {
     static count: number = 0;
     ID: number;
@@ -25,7 +25,7 @@ export class Obj {
 export class MovingObj extends Obj {
     vx: number;
     vy: number;
-    footprints: Footprint[] = [];
+    // trails: Trail[] = [];
 
     constructor(x: number, y: number, g: number = 0, vx: number, vy: number) {
         super(x, y, g);
@@ -44,7 +44,7 @@ export class MovingObj extends Obj {
         let dy: number;
         let a: number;
         let rsquare: number;
-        planets.forEach((p) => {
+        planets.forEach(p => {
             if (p.g != 0 && p.ID != this.ID) {
                 dx = p.x - this.x;
                 dy = p.y - this.y;

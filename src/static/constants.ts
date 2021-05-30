@@ -8,7 +8,11 @@ export enum SELECTED_TYPES {
 
 export enum CONSTANTS {
     PLANET_DEFAULT_SIZE = 100000,
-    FOOTPRINT_LIFE_TIME = 3000,
-    SHIFT_RATE = 1000,
-    CTRL_RATE = 1000,
+}
+
+export class StaticValues {
+    // update rates
+    static ctrlRate: number = 100;
+    static shiftRate: number = 100;
+    static trailLifetime: number = 3000;
 }

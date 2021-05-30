@@ -3,26 +3,93 @@
 /******/ 	var __webpack_modules__ = ([
 /* 0 */,
 /* 1 */
-/***/ ((__unused_webpack_module, exports) => {
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.CONSTANTS = exports.SELECTED_TYPES = void 0;
-var SELECTED_TYPES;
-(function (SELECTED_TYPES) {
-    SELECTED_TYPES[SELECTED_TYPES["SOLID_PLANET"] = 1] = "SOLID_PLANET";
-    SELECTED_TYPES[SELECTED_TYPES["MOVING_PLANET"] = 2] = "MOVING_PLANET";
-    SELECTED_TYPES[SELECTED_TYPES["SHIP"] = 3] = "SHIP";
-    SELECTED_TYPES[SELECTED_TYPES["SOLID_INVERTED_PLANET"] = 4] = "SOLID_INVERTED_PLANET";
-    SELECTED_TYPES[SELECTED_TYPES["MOVE"] = 0] = "MOVE";
-})(SELECTED_TYPES = exports.SELECTED_TYPES || (exports.SELECTED_TYPES = {}));
-var CONSTANTS;
-(function (CONSTANTS) {
-    CONSTANTS[CONSTANTS["PLANET_DEFAULT_SIZE"] = 100000] = "PLANET_DEFAULT_SIZE";
-    CONSTANTS[CONSTANTS["FOOTPRINT_LIFE_TIME"] = 3000] = "FOOTPRINT_LIFE_TIME";
-    CONSTANTS[CONSTANTS["SHIFT_RATE"] = 1000] = "SHIFT_RATE";
-    CONSTANTS[CONSTANTS["CTRL_RATE"] = 1000] = "CTRL_RATE";
-})(CONSTANTS = exports.CONSTANTS || (exports.CONSTANTS = {}));
+exports.Ship = exports.MovingPlanet = exports.SolidInvertedPlanet = exports.SolidPlanet = void 0;
+const objBase_1 = __webpack_require__(2);
+class SolidPlanet extends objBase_1.Obj {
+    constructor(x, y, g = 100000) {
+        super(x, y, g);
+    }
+    posCalc() { }
+    renderCalc(dt, ctx) {
+        var radgrad = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.g ** 0.5 / 5);
+        radgrad.addColorStop(0, "#000000");
+        radgrad.addColorStop(0.1, "#000000");
+        radgrad.addColorStop(0.1, "#E7AC0C");
+        radgrad.addColorStop(1, "rgba(255, 255, 255, 0)");
+        ctx.fillStyle = radgrad;
+        ctx.fillRect(0, 0, 100000, 100000);
+        // console.log(this.x, this.y);
+        this.isModified = false;
+    }
+}
+exports.SolidPlanet = SolidPlanet;
+class SolidInvertedPlanet extends SolidPlanet {
+    constructor(x, y, g = 100000) {
+        super(x, y, -g);
+    }
+    posCalc() { }
+    renderCalc(dt, ctx) {
+        var radgrad = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, (0 - this.g) ** 0.5 / 5);
+        radgrad.addColorStop(0, "#000000");
+        radgrad.addColorStop(0.1, "#000000");
+        radgrad.addColorStop(0.1, "#1853F3");
+        radgrad.addColorStop(1, "rgba(255, 255, 255, 0)");
+        ctx.fillStyle = radgrad;
+        ctx.fillRect(0, 0, 100000, 100000);
+        // console.log(this.x, this.y);
+    }
+}
+exports.SolidInvertedPlanet = SolidInvertedPlanet;
+class MovingPlanet extends objBase_1.MovingObj {
+    constructor(x, y, g = 100000, vx = 0, vy = 0) {
+        super(x, y, g, vx, vy);
+    }
+    renderCalc(dt, ctx) {
+        var radgrad = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.g ** 0.5 / 5);
+        radgrad.addColorStop(0, "#000000");
+        radgrad.addColorStop(0.1, "#000000");
+        radgrad.addColorStop(0.1, "#A7D30C");
+        radgrad.addColorStop(1, "rgba(255, 255, 255, 0)");
+        ctx.fillStyle = radgrad;
+        ctx.fillRect(0, 0, 100000, 100000);
+    }
+}
+exports.MovingPlanet = MovingPlanet;
+class Ship extends objBase_1.MovingObj {
+    constructor(x, y, vx, vy) {
+        super(x, y, 0, vx, vy);
+    }
+    renderCalc(dt, ctx) {
+        if (this.isModified) {
+            let rectangle = new Path2D();
+            rectangle.rect(this.x, this.y, 3, 3);
+            // this.trails.push(rectangle);
+            ctx.fillStyle = "rgb(0, 0, 0)";
+            ctx.fill(rectangle);
+            this.isModified = false;
+        }
+        // while (1) {
+        //     // console.log(this.trails[0]);
+        //     if (this.trails.length != 0 && this.trails[0].createdDate + StaticValues.trailLifetime < Date.now()) {
+        //         this.trails.shift();
+        //     } else {
+        //         break;
+        //     }
+        // }
+        // ctx.fillStyle = "rgb(0, 0, 0)";
+        // console.log(this.trails);
+        // const myWorker = new Worker("../dist/worker/renderworker.js");
+        // this.trails.forEach(f => {
+        //     myWorker.postMessage([ctx, f]);
+        //     // ctx.fill(f);
+        // });
+    }
+}
+exports.Ship = Ship;
 
 
 /***/ }),
@@ -31,14 +98,14 @@ var CONSTANTS;
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.MovingObj = exports.Obj = exports.Footprint = void 0;
-class Footprint extends Path2D {
-    constructor() {
-        super();
-        this.createdDate = Date.now();
-    }
-}
-exports.Footprint = Footprint;
+exports.MovingObj = exports.Obj = void 0;
+// export class Trail extends Path2D {
+//     createdDate: number;
+//     constructor() {
+//         super();
+//         this.createdDate = Date.now();
+//     }
+// }
 class Obj {
     constructor(x, y, g) {
         this.isModified = true;
@@ -54,9 +121,9 @@ class Obj {
 exports.Obj = Obj;
 Obj.count = 0;
 class MovingObj extends Obj {
+    // trails: Trail[] = [];
     constructor(x, y, g = 0, vx, vy) {
         super(x, y, g);
-        this.footprints = [];
         this.vx = vx;
         this.vy = vy;
     }
@@ -71,7 +138,7 @@ class MovingObj extends Obj {
         let dy;
         let a;
         let rsquare;
-        planets.forEach((p) => {
+        planets.forEach(p => {
             if (p.g != 0 && p.ID != this.ID) {
                 dx = p.x - this.x;
                 dy = p.y - this.y;
@@ -119,127 +186,10 @@ exports.MovingObj = MovingObj;
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.Ship = exports.MovingPlanet = exports.SolidInvertedPlanet = exports.SolidPlanet = void 0;
+exports.Board = void 0;
+const constants_1 = __webpack_require__(4);
 const objBase_1 = __webpack_require__(2);
-const constants_1 = __webpack_require__(1);
-class SolidPlanet extends objBase_1.Obj {
-    constructor(x, y, g = 100000) {
-        super(x, y, g);
-    }
-    posCalc() { }
-    renderCalc(dt, ctx) {
-        var radgrad = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.g ** 0.5 / 5);
-        radgrad.addColorStop(0, '#000000');
-        radgrad.addColorStop(0.1, '#000000');
-        radgrad.addColorStop(0.1, '#E7AC0C');
-        radgrad.addColorStop(1, 'rgba(255, 255, 255, 0)');
-        ctx.fillStyle = radgrad;
-        ctx.fillRect(0, 0, 100000, 100000);
-        // console.log(this.x, this.y);
-        this.isModified = false;
-    }
-}
-exports.SolidPlanet = SolidPlanet;
-class SolidInvertedPlanet extends SolidPlanet {
-    constructor(x, y, g = 100000) {
-        super(x, y, -g);
-    }
-    posCalc() { }
-    renderCalc(dt, ctx) {
-        var radgrad = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, (0 - this.g) ** 0.5 / 5);
-        radgrad.addColorStop(0, '#000000');
-        radgrad.addColorStop(0.1, '#000000');
-        radgrad.addColorStop(0.1, '#1853F3');
-        radgrad.addColorStop(1, 'rgba(255, 255, 255, 0)');
-        ctx.fillStyle = radgrad;
-        ctx.fillRect(0, 0, 100000, 100000);
-        // console.log(this.x, this.y);
-    }
-}
-exports.SolidInvertedPlanet = SolidInvertedPlanet;
-class MovingPlanet extends objBase_1.MovingObj {
-    constructor(x, y, g = 100000, vx = 0, vy = 0) {
-        super(x, y, g, vx, vy);
-    }
-    renderCalc(dt, ctx) {
-        var radgrad = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.g ** 0.5 / 5);
-        radgrad.addColorStop(0, '#000000');
-        radgrad.addColorStop(0.1, '#000000');
-        radgrad.addColorStop(0.1, '#A7D30C');
-        radgrad.addColorStop(1, 'rgba(255, 255, 255, 0)');
-        ctx.fillStyle = radgrad;
-        ctx.fillRect(0, 0, 100000, 100000);
-    }
-}
-exports.MovingPlanet = MovingPlanet;
-class Ship extends objBase_1.MovingObj {
-    constructor(x, y, vx, vy) {
-        super(x, y, 0, vx, vy);
-    }
-    renderCalc(dt, ctx) {
-        if (this.isModified) {
-            var rectangle = new objBase_1.Footprint();
-            rectangle.rect(this.x, this.y, 3, 3);
-            this.footprints.push(rectangle);
-            this.isModified = false;
-        }
-        while (1) {
-            // console.log(this.footprints[0]);
-            if (this.footprints.length != 0 && this.footprints[0].createdDate + constants_1.CONSTANTS.FOOTPRINT_LIFE_TIME < Date.now()) {
-                this.footprints.shift();
-            }
-            else {
-                break;
-            }
-        }
-        ctx.fillStyle = 'rgb(0, 0, 0)';
-        // console.log(this.footprints);
-        this.footprints.forEach((f) => {
-            ctx.fill(f);
-        });
-    }
-}
-exports.Ship = Ship;
-
-
-/***/ })
-/******/ 	]);
-/************************************************************************/
-/******/ 	// The module cache
-/******/ 	var __webpack_module_cache__ = {};
-/******/ 	
-/******/ 	// The require function
-/******/ 	function __webpack_require__(moduleId) {
-/******/ 		// Check if module is in cache
-/******/ 		var cachedModule = __webpack_module_cache__[moduleId];
-/******/ 		if (cachedModule !== undefined) {
-/******/ 			return cachedModule.exports;
-/******/ 		}
-/******/ 		// Create a new module (and put it into the cache)
-/******/ 		var module = __webpack_module_cache__[moduleId] = {
-/******/ 			// no module.id needed
-/******/ 			// no module.loaded needed
-/******/ 			exports: {}
-/******/ 		};
-/******/ 	
-/******/ 		// Execute the module function
-/******/ 		__webpack_modules__[moduleId](module, module.exports, __webpack_require__);
-/******/ 	
-/******/ 		// Return the exports of the module
-/******/ 		return module.exports;
-/******/ 	}
-/******/ 	
-/************************************************************************/
-var __webpack_exports__ = {};
-// This entry need to be wrapped in an IIFE because it need to be isolated against other modules in the chunk.
-(() => {
-var exports = __webpack_exports__;
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-console.log('test');
-const constants_1 = __webpack_require__(1);
-const objBase_1 = __webpack_require__(2);
-const objs_1 = __webpack_require__(3);
+const objs_1 = __webpack_require__(1);
 class Board {
     constructor(dt, renderdt, ratio) {
         this.objs = [];
@@ -256,7 +206,29 @@ class Board {
         this.isShift = false;
         this.ctrlInterval = 0;
         this.shiftInterval = 0;
+        //worker
+        this.calcWorker = new Worker("../dist/worker/calcworker.js");
+        //render realtime checker
+        this.renderFinishedTime = window.performance.now();
+        this.renderFinishedCount = 0;
         // https://github.com/kernhanda/kernhanda.github.io/blob/master/demos/canvas/main.ts
+        this.inputEventHandler = (e) => {
+            let target = e.target;
+            switch (target.id) {
+                case "ctrlRate":
+                    this.ctrlRateModify(target);
+                    break;
+                case "trailRate":
+                    this.trailRateModify(target);
+                    break;
+                case "dtRate":
+                    this.dtRateModify(target);
+                    break;
+                default:
+                    break;
+            }
+            document.getElementById(target.id + "Viewer").innerText = target.value;
+        };
         this.clearEventHandler = () => {
             this.clearCanvas();
         };
@@ -264,7 +236,8 @@ class Board {
             if (this.currentSelected == constants_1.SELECTED_TYPES.MOVING_PLANET) {
                 if (e.deltaY < 0 || this.planetSize > 10000) {
                     this.planetSize -= e.deltaY * 100;
-                    document.getElementById('size').innerText = 'current moving planet size = ' + this.planetSize.toString();
+                    document.getElementById("size").innerText =
+                        "current moving planet size = " + this.planetSize.toString();
                 }
             }
         };
@@ -276,16 +249,24 @@ class Board {
             this.isAdding = false;
         };
         this.pressEventHandler = (e) => {
-            let mouseX = e.changedTouches ? e.changedTouches[0].pageX : e.pageX;
-            let mouseY = e.changedTouches ? e.changedTouches[0].pageY : e.pageY;
+            let mouseX = e.changedTouches
+                ? e.changedTouches[0].pageX
+                : e.pageX;
+            let mouseY = e.changedTouches
+                ? e.changedTouches[0].pageY
+                : e.pageY;
             mouseX -= this.canvas.offsetLeft;
             mouseY -= this.canvas.offsetTop;
             this.isAdding = true;
             this.addClick(mouseX, mouseY, true);
         };
         this.dragEventHandler = (e) => {
-            let mouseX = e.changedTouches ? e.changedTouches[0].pageX : e.pageX;
-            let mouseY = e.changedTouches ? e.changedTouches[0].pageY : e.pageY;
+            let mouseX = e.changedTouches
+                ? e.changedTouches[0].pageX
+                : e.pageX;
+            let mouseY = e.changedTouches
+                ? e.changedTouches[0].pageY
+                : e.pageY;
             mouseX -= this.canvas.offsetLeft;
             mouseY -= this.canvas.offsetTop;
             this.dragProcess(e, mouseX, mouseY);
@@ -295,11 +276,11 @@ class Board {
         this.keyUpEventHandler = (e) => {
             this.keyUpProcess(e);
         };
-        let canvas = document.getElementById('canvas');
-        let ctx = canvas.getContext('2d');
-        ctx.lineCap = 'round';
-        ctx.lineJoin = 'round';
-        ctx.strokeStyle = 'black';
+        let canvas = document.getElementById("canvas");
+        let ctx = canvas.getContext("2d");
+        ctx.lineCap = "round";
+        ctx.lineJoin = "round";
+        ctx.strokeStyle = "black";
         ctx.lineWidth = 1;
         this.canvas = canvas;
         this.ctx = ctx;
@@ -312,34 +293,49 @@ class Board {
     }
     createUserEvents() {
         let canvas = this.canvas;
-        canvas.addEventListener('mousedown', this.pressEventHandler);
-        canvas.addEventListener('mousemove', this.dragEventHandler);
-        canvas.addEventListener('mouseup', this.releaseEventHandler);
-        canvas.addEventListener('mouseout', this.cancelEventHandler);
-        canvas.addEventListener('touchstart', this.pressEventHandler);
-        canvas.addEventListener('touchmove', this.dragEventHandler);
-        canvas.addEventListener('touchend', this.releaseEventHandler);
-        canvas.addEventListener('touchcancel', this.cancelEventHandler);
-        canvas.addEventListener('wheel', this.scrollEventHandler);
-        window.addEventListener('keypress', this.keyDownEventHandler);
-        window.addEventListener('keyup', this.keyUpEventHandler);
-        document.getElementById('solidPlanet').addEventListener('click', () => {
+        canvas.addEventListener("mousedown", this.pressEventHandler);
+        canvas.addEventListener("mousemove", this.dragEventHandler);
+        canvas.addEventListener("mouseup", this.releaseEventHandler);
+        canvas.addEventListener("mouseout", this.cancelEventHandler);
+        canvas.addEventListener("touchstart", this.pressEventHandler);
+        canvas.addEventListener("touchmove", this.dragEventHandler);
+        canvas.addEventListener("touchend", this.releaseEventHandler);
+        canvas.addEventListener("touchcancel", this.cancelEventHandler);
+        canvas.addEventListener("wheel", this.scrollEventHandler);
+        window.addEventListener("keypress", this.keyDownEventHandler);
+        window.addEventListener("keyup", this.keyUpEventHandler);
+        document.getElementById("solidPlanet").addEventListener("click", () => {
             this.setSelected(constants_1.SELECTED_TYPES.SOLID_PLANET);
         });
-        document.getElementById('solidInvertedPlanet').addEventListener('click', () => {
+        document.getElementById("solidInvertedPlanet").addEventListener("click", () => {
             this.setSelected(constants_1.SELECTED_TYPES.SOLID_INVERTED_PLANET);
         });
-        document.getElementById('movingPlanet').addEventListener('click', () => {
+        document.getElementById("movingPlanet").addEventListener("click", () => {
             this.setSelected(constants_1.SELECTED_TYPES.MOVING_PLANET);
         });
-        document.getElementById('ship').addEventListener('click', () => {
+        document.getElementById("ship").addEventListener("click", () => {
             this.setSelected(constants_1.SELECTED_TYPES.SHIP);
         });
-        document.getElementById('move').addEventListener('click', () => {
+        document.getElementById("move").addEventListener("click", () => {
             this.setSelected(constants_1.SELECTED_TYPES.MOVE);
         });
-        document.getElementById('clear').addEventListener('click', this.clearEventHandler);
-        window.addEventListener('resize', this.resizeEventHandler);
+        document.getElementById("clear").addEventListener("click", this.clearEventHandler);
+        let t = document.getElementsByClassName("range");
+        for (let i = 0; i < t.length; i++) {
+            t.item(i).addEventListener("input", this.inputEventHandler);
+        }
+        window.addEventListener("resize", this.resizeEventHandler);
+    }
+    ctrlRateModify(target) {
+        constants_1.StaticValues.ctrlRate = 1000 / Number(target.value);
+        constants_1.StaticValues.shiftRate = 1000 / Number(target.value);
+        console.log(constants_1.StaticValues.ctrlRate);
+    }
+    trailRateModify(target) {
+        constants_1.StaticValues.trailLifetime = Number(target.value);
+    }
+    dtRateModify(target) {
+        this.ratio = Number(target.value);
     }
     addClick(mouseX, mouseY, isFirstClick) {
         if (isFirstClick) {
@@ -381,41 +377,39 @@ class Board {
     dragProcess(e, mouseX, mouseY) {
         if (this.isAdding) {
             if (e.shiftKey) {
+                let dx = this.endX - this.startX;
+                let dy = this.endY - this.startY;
+                this.startX = mouseX;
+                this.startY = mouseY;
+                this.endX = mouseX + dx;
+                this.endY = mouseY + dy;
                 if (!this.isShift) {
                     this.isShift = true;
-                    this.addClick(mouseX, mouseY, false);
-                    let dx = this.endX - this.startX;
-                    let dy = this.endY - this.startY;
                     this.shiftInterval = window.setInterval(() => {
-                        this.startX = mouseX;
-                        this.startY = mouseY;
-                        this.endX = mouseX + dx;
-                        this.endY = mouseY + dy;
                         this.addByPlayer();
-                    }, constants_1.CONSTANTS.SHIFT_RATE);
+                    }, constants_1.StaticValues.shiftRate);
                 }
             }
             else if (e.ctrlKey) {
                 if (!this.isCtrl) {
                     this.isCtrl = true;
                     this.ctrlInterval = window.setInterval(() => {
-                        this.addClick(mouseX, mouseY, false);
                         this.addByPlayer();
-                    }, constants_1.CONSTANTS.CTRL_RATE);
+                    }, constants_1.StaticValues.ctrlRate);
                 }
             }
-            if (!this.isShift && !this.isCtrl) {
+            if (!this.isShift) {
                 this.addClick(mouseX, mouseY, false);
             }
         }
     }
     keyUpProcess(e) {
         switch (e.key) {
-            case 'Control':
+            case "Control":
                 this.isCtrl = false;
                 clearInterval(this.ctrlInterval);
                 break;
-            case 'Shift':
+            case "Shift":
                 this.isShift = false;
                 clearInterval(this.shiftInterval);
                 break;
@@ -425,14 +419,24 @@ class Board {
     }
     run() {
         setInterval(() => {
-            this.ships.forEach((s) => {
+            this.ships.forEach(s => {
+                // this.calcWorker.postMessage([s, this.dt, this.ratio, this.objs]);
                 s.posCalc(this.dt, this.ratio, this.objs);
             });
+            if (this.renderFinishedCount > 200 / this.dt) {
+                document.getElementById("timeRatio").innerText =
+                    "Current simulation time ratio = x" +
+                        this.dt / ((window.performance.now() - this.renderFinishedTime) / (200 / this.dt));
+                this.renderFinishedCount = 0;
+                this.renderFinishedTime = window.performance.now();
+            }
+            this.renderFinishedCount++;
         }, this.dt);
         setInterval(() => {
-            this.ctx.clearRect(0, 0, this.canvas.width * 2, this.canvas.height * 2);
+            this.ctx.fillStyle = "rgba(255, 255, 255, " + (1 / constants_1.StaticValues.trailLifetime) ** 0.5 + ")";
+            this.ctx.fillRect(0, 0, this.canvas.width * 2, this.canvas.height * 2);
             this.ctx.beginPath();
-            this.objs.forEach((s) => {
+            this.objs.forEach(s => {
                 s.renderCalc(this.renderdt, this.ctx);
             });
         }, this.renderdt);
@@ -467,20 +471,88 @@ class Board {
     deleteObj(id) {
         let index = this.findId(this.objs, id);
         if (index == -1) {
-            console.log('there is no planet has id', id);
+            console.log("there is no planet has id", id);
             return false;
         }
         else {
             this.objs.splice(index, 1);
-            console.log('deleted', id);
+            console.log("deleted", id);
             return true;
         }
     }
 }
+exports.Board = Board;
+
+
+/***/ }),
+/* 4 */
+/***/ ((__unused_webpack_module, exports) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.StaticValues = exports.CONSTANTS = exports.SELECTED_TYPES = void 0;
+var SELECTED_TYPES;
+(function (SELECTED_TYPES) {
+    SELECTED_TYPES[SELECTED_TYPES["SOLID_PLANET"] = 1] = "SOLID_PLANET";
+    SELECTED_TYPES[SELECTED_TYPES["MOVING_PLANET"] = 2] = "MOVING_PLANET";
+    SELECTED_TYPES[SELECTED_TYPES["SHIP"] = 3] = "SHIP";
+    SELECTED_TYPES[SELECTED_TYPES["SOLID_INVERTED_PLANET"] = 4] = "SOLID_INVERTED_PLANET";
+    SELECTED_TYPES[SELECTED_TYPES["MOVE"] = 0] = "MOVE";
+})(SELECTED_TYPES = exports.SELECTED_TYPES || (exports.SELECTED_TYPES = {}));
+var CONSTANTS;
+(function (CONSTANTS) {
+    CONSTANTS[CONSTANTS["PLANET_DEFAULT_SIZE"] = 100000] = "PLANET_DEFAULT_SIZE";
+})(CONSTANTS = exports.CONSTANTS || (exports.CONSTANTS = {}));
+class StaticValues {
+}
+exports.StaticValues = StaticValues;
+// update rates
+StaticValues.ctrlRate = 100;
+StaticValues.shiftRate = 100;
+StaticValues.trailLifetime = 3000;
+
+
+/***/ })
+/******/ 	]);
+/************************************************************************/
+/******/ 	// The module cache
+/******/ 	var __webpack_module_cache__ = {};
+/******/ 	
+/******/ 	// The require function
+/******/ 	function __webpack_require__(moduleId) {
+/******/ 		// Check if module is in cache
+/******/ 		var cachedModule = __webpack_module_cache__[moduleId];
+/******/ 		if (cachedModule !== undefined) {
+/******/ 			return cachedModule.exports;
+/******/ 		}
+/******/ 		// Create a new module (and put it into the cache)
+/******/ 		var module = __webpack_module_cache__[moduleId] = {
+/******/ 			// no module.id needed
+/******/ 			// no module.loaded needed
+/******/ 			exports: {}
+/******/ 		};
+/******/ 	
+/******/ 		// Execute the module function
+/******/ 		__webpack_modules__[moduleId](module, module.exports, __webpack_require__);
+/******/ 	
+/******/ 		// Return the exports of the module
+/******/ 		return module.exports;
+/******/ 	}
+/******/ 	
+/************************************************************************/
+var __webpack_exports__ = {};
+// This entry need to be wrapped in an IIFE because it need to be isolated against other modules in the chunk.
+(() => {
+var exports = __webpack_exports__;
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+console.log("test");
+const objs_1 = __webpack_require__(1);
+const board_1 = __webpack_require__(3);
 function draw() {
-    let canvas = document.getElementById('canvas');
-    let ctx = canvas.getContext('2d');
-    const board = new Board(1, 10, 10);
+    let canvas = document.getElementById("canvas");
+    let ctx = canvas.getContext("2d");
+    const board = new board_1.Board(1, 10, 1);
     board.addObj(new objs_1.MovingPlanet(900, 500, 300000));
     // board.addObj(new SolidPlanet(1700, 700, 200000));
     // board.addObj(new MovingPlanet(1700, 400, 200000, 35, 30));
