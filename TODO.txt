@@ -11,3 +11,4 @@
 캔버스 움직임
 movingInvertedPlanet
 일정이상 넘어가면 지우는거
+git 브랜치좀 체계적으로 
